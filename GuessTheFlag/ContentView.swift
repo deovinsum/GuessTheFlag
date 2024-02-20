@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var scoreTitle = ""
     @State private var userScore = 0
     
+    @State private var animationAmount = 0.0
+    
     var body: some View {
         ZStack {
             LinearGradient(colors: [.blue, .black], startPoint: .top, endPoint: .bottom)
@@ -27,13 +29,16 @@ struct ContentView: View {
                 }
                 
                 ForEach(0..<3) { number in
-                    Button {
-                        flagTapped(number)
-                    } label: {
-                        Image(countries[number])
-                            .clipShape(.buttonBorder)
-                            .shadow(radius: 5)
-                    }
+                        Button {
+                            flagTapped(number)
+                            withAnimation(.spring(duration: 1, bounce: 0.5)) {}
+                            
+                        } label: {
+                            Image(countries[number])
+                                .clipShape(.buttonBorder)
+                                .shadow(radius: 5)
+                                .rotation3DEffect(.degrees(animationAmount), axis: /*@START_MENU_TOKEN@*/(x: 0.0, y: 1.0, z: 0.0)/*@END_MENU_TOKEN@*/)
+                        }
                 }
                 
                     Text("You score is \(userScore)")
@@ -52,14 +57,17 @@ struct ContentView: View {
         if number == correctAnswer {
             userScore += 1
             scoreTitle = "Correct"
+            animationAmount = 360
         } else {
             scoreTitle = "Incorrect"
+            animationAmount = 0
         }
         
         showingScore = true
     }
     
     func askQuestion() {
+        animationAmount = 0
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
     }
